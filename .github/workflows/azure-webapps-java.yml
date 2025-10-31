@@ -1,41 +1,37 @@
 name: Build and deploy Spring Boot app to Azure Web App
 
 on:
-  push:
+  push:                # means the workflow runs automatically
     branches:
-      - main
+      - main           # every time you push to the main branch
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build-and-deploy:    # define a single job
+    runs-on: ubuntu-latest  # run on a Linux VM
 
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
-
-      # Move up one directory so Maven can find pom.xml
-      - name: Move to correct folder
-        run: cd ..
+        uses: actions/checkout@v4   # download your repo into the runner
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'temurin'   # use Temurin JDK
           java-version: '17'
 
-      # 👇 Skip tests to avoid PostgreSQL connection timeout
-      - name: Build with Maven (skip tests)
-        run: mvn clean package -DskipTests
+      - name: Build with Maven
+        run: mvn clean package -DskipTests   # build .jar, skip tests to avoid DB errors
 
-      # ✅ NEW STEP — Azure Login (this is what was missing)
+      # 👇 THIS is the Azure login step
+      # It tells GitHub how to authenticate with your Azure account
       - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}  # refers to your GitHub secret
 
-      # ✅ Deploy your JAR to Azure App Service
+      # 👇 Finally, deploy the JAR to your App Service
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "taskmanager-api-backend"
+          app-name: "taskmanager-api-backend"  # your Azure App Service name
           package: target/*.jar

@@ -13,8 +13,8 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 👇 Move up one level so Maven finds pom.xml correctly
-      - name: Move to project root
+      # Move up one directory so Maven can find pom.xml
+      - name: Move to correct folder
         run: cd ..
 
       - name: Set up Java 17
@@ -23,11 +23,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 👇 Skip tests to avoid DB connection timeout during build
+      # 👇 Skip tests to avoid PostgreSQL connection timeout
       - name: Build with Maven (skip tests)
         run: mvn clean package -DskipTests
 
-      # 👇 Deploy generated JAR to your Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:

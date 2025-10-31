@@ -50,4 +50,4 @@ jobs:
           app-name: 'taskmanager-api-backend'
           slot-name: 'Production'
           package: '*.jar'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_129640C62CA9476D8A5EB17F2D29D9AA }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_36F40D7772BA4E4AA003C6CBB641028E }}

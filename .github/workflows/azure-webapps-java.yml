@@ -1,0 +1,35 @@
+name: Build and deploy Spring Boot app to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 👇 Move up one level so Maven finds pom.xml correctly
+      - name: Move to project root
+        run: cd ..
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 👇 Skip tests to avoid DB connection timeout during build
+      - name: Build with Maven (skip tests)
+        run: mvn clean package -DskipTests
+
+      # 👇 Deploy generated JAR to your Azure Web App
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: "<YOUR_APP_SERVICE_NAME>"
+          package: target/*.jar
